@@ -83,24 +83,5 @@ $(document).ready(function() {
       $(this).toggleClass('zoomed');
   });
 
-  $(document).ready(function() {
-    $('#openSiteBtn').click(function() {
-        // Specify the URL of the site you want to open
-        const siteUrl = 'https://anas524.github.io/Tracking-Maps/'; // Replace with your desired URL
-        // Open the site in a new tab
-        window.open(siteUrl, '_blank'); // '_blank' specifies that it should open in a new tab
-    });
-
-    $('#openSiteBtn-02').click(function() {
-        const siteUrl = 'https://anas524.github.io/LatLong-Project/';
-        window.open(siteUrl, '_blank');
-    });
-
-    $('#openSiteBtn-04').click(function() {
-        const siteUrl = 'https://anas524.github.io/MapApp-Login_Register/';
-        window.open(siteUrl, '_blank');
-    });
-  });
-
 });
 

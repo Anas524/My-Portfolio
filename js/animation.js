@@ -1,4 +1,10 @@
-// Define DOM elements
+// =======================
+// DOM ELEMENTS
+// =======================
+
+// keeps track of the last reverse class to play smooth back-and-forth
+let lastReverseAnimation = "";
+
 const heroImage = document.querySelector("#hero__animation__img");
 
 const tl = document.querySelector("#grid__tl");
@@ -20,7 +26,10 @@ const projectOne = document.querySelector(".p1");
 const projectTwo = document.querySelector(".p2");
 const projectThree = document.querySelector(".p3");
 
-// Define colors and positions
+// =======================
+// COLORS / POSITIONS
+// =======================
+
 const bgColor = "var(--bg)";
 const bgColorAlt = "var(--bg-alt)";
 const textColor = "var(--text)";
@@ -38,13 +47,40 @@ let blHidden = "translateX(-100vw) translateY(100vh)";
 let brActive = "translateX(-5vw) translateY(0)";
 let brHidden = "translateX(100vw) translateY(100vh)";
 
-// Define corner that is open
+// which corner is open? ('' means none)
 let activeCorner = "";
 
-// Add an event listener to the window object to listen for resize events
-window.addEventListener("resize", handleWindowResize);
+// =======================
+// CLOSE EVERYTHING
+// =======================
 
-// Function that hanldes the styling when resizing window
+function closeAllCorners() {
+  // button labels
+  tlBtn.innerHTML = "About";
+  trBtn.innerHTML = "Experience";
+  blBtn.innerHTML = "Projects";
+  brBtn.innerHTML = "Contact";
+
+  // button colors
+  [tlBtn, trBtn, blBtn, brBtn].forEach((btn) => {
+    btn.style.background = bgColor;
+    btn.style.color = textColor;
+    btn.style.zIndex = "100";
+  });
+
+  // hide content
+  tlContent.style.transform = tlHidden;
+  trContent.style.transform = trHidden;
+  blContent.style.transform = blHidden;
+  brContent.style.transform = brHidden;
+
+  activeCorner = "";
+}
+
+// =======================
+// RESPONSIVE BEHAVIOUR
+// =======================
+
 function handleWindowResize() {
   switch (activeCorner) {
     case "top-left":
@@ -60,9 +96,6 @@ function handleWindowResize() {
         tlContent.style.background = "var(--bg-transparent)";
         tlContent.style.zIndex = "200";
         tlBtn.style.zIndex = "300";
-        trBtn.style.zIndex = "100";
-        blBtn.style.zIndex = "100";
-        brBtn.style.zIndex = "100";
       } else {
         tlActive = "translateX(5vw) translateY(0)";
         tlContent.style.transform = "translateX(5vw) translateY(0)";
@@ -86,9 +119,6 @@ function handleWindowResize() {
         trContent.style.background = "var(--bg-transparent)";
         trContent.style.zIndex = "200";
         trBtn.style.zIndex = "300";
-        tlBtn.style.zIndex = "100";
-        blBtn.style.zIndex = "100";
-        brBtn.style.zIndex = "100";
       } else {
         trActive = "translateX(-5vw) translateY(0)";
         trContent.style.transform = "translateX(-5vw) translateY(0)";
@@ -111,10 +141,7 @@ function handleWindowResize() {
         blContent.style.justifyContent = "center";
         blContent.style.background = "var(--bg-transparent)";
         blContent.style.zIndex = "200";
-        trBtn.style.zIndex = "100";
-        tlBtn.style.zIndex = "100";
         blBtn.style.zIndex = "300";
-        brBtn.style.zIndex = "100";
         projectOne.style.width = "70%";
         projectOne.style.margin = "auto auto 0.5rem";
         projectTwo.style.width = "70%";
@@ -132,10 +159,7 @@ function handleWindowResize() {
         blContent.style.justifyContent = "center";
         blContent.style.background = "var(--bg-transparent)";
         blContent.style.zIndex = "200";
-        trBtn.style.zIndex = "100";
-        tlBtn.style.zIndex = "100";
         blBtn.style.zIndex = "300";
-        brBtn.style.zIndex = "100";
         projectOne.style.width = "40%";
         projectOne.style.margin = "auto auto 0.5rem";
         projectTwo.style.width = "40%";
@@ -168,26 +192,95 @@ function handleWindowResize() {
         brContent.style.justifyContent = "center";
         brContent.style.background = "var(--bg-transparent)";
         brContent.style.zIndex = "200";
-        trBtn.style.zIndex = "100";
-        tlBtn.style.zIndex = "100";
-        blBtn.style.zIndex = "100";
         brBtn.style.zIndex = "300";
       } else {
         brActive = "translateX(-5vw) translateY(0)";
         brContent.style.transform = "translateX(-5vw) translateY(0)";
-        brContent.style.width = "30vw";
-        brContent.style.height = "0";
-        brContent.style.bottom = "30vh";
+        brContent.style.width = "22rem";      // card-sized block, not huge 30vw
+        brContent.style.height = "auto";
+        brContent.style.bottom = "18vh";      // same as CSS, comfortably above bottom
         brContent.style.display = "block";
       }
       break;
 
     default:
+      // nothing open
+      break;
   }
 }
 
-// Store last reverse animation, ready to be played
-let lastReverseAnimation = "";
+window.addEventListener("resize", handleWindowResize);
+
+// =======================
+// OPEN A CORNER
+// =======================
+
+function openCorner(corner) {
+  // toggle off if same corner is open: play reverse, then close
+  if (activeCorner === corner) {
+    switch (corner) {
+      case "top-left":    playClosingAnimation("reverse-animate-top-left");    break;
+      case "top-right":   playClosingAnimation("reverse-animate-top-right");   break;
+      case "bottom-left": playClosingAnimation("reverse-animate-bottom-left"); break;
+      case "bottom-right":playClosingAnimation("reverse-animate-bottom-right");break;
+    }
+    return; // playClosingAnimation will reset labels/colors/content
+  }
+
+  // otherwise, close everything first
+  closeAllCorners();
+
+  // mark which corner is active and style the active button
+  activeCorner = corner;
+  switch (corner) {
+    case "top-left":
+      tlBtn.innerHTML = "&uarr;<br/>About";
+      tlBtn.style.background = bgColorAlt;
+      tlBtn.style.color = textColorAlt;
+      // run face animation (TL)
+      playAnimation("animate-top-left", "reverse-animate-top-left");
+      break;
+
+    case "top-right":
+      trBtn.innerHTML = "&uarr;<br/>Experience";
+      trBtn.style.background = bgColorAlt;
+      trBtn.style.color = textColorAlt;
+      // run face animation (TR)
+      playAnimation("animate-top-right", "reverse-animate-top-right");
+      break;
+
+    case "bottom-left":
+      blBtn.innerHTML = "Projects<br/>&darr;";
+      blBtn.style.background = bgColorAlt;
+      blBtn.style.color = textColorAlt;
+      // run face animation (BL)
+      playAnimation("animate-bottom-left", "reverse-animate-bottom-left");
+      break;
+
+    case "bottom-right":
+      brBtn.innerHTML = "Contact<br/>&darr;";
+      brBtn.style.background = bgColorAlt;
+      brBtn.style.color = textColorAlt;
+      // run face animation (BR)
+      playAnimation("animate-bottom-right", "reverse-animate-bottom-right");
+      break;
+  }
+
+  // size/position the active content pane
+  handleWindowResize();
+}
+
+// =======================
+// BUTTON CLICK HANDLERS
+// =======================
+
+tlBtn.addEventListener("click", () => openCorner("top-left"));
+trBtn.addEventListener("click", () => openCorner("top-right"));
+blBtn.addEventListener("click", () => openCorner("bottom-left"));
+brBtn.addEventListener("click", () => openCorner("bottom-right"));
+
+// start with everything closed
+closeAllCorners();
 
 // Play animation function
 function playAnimation(animation, reverseAnimation) {
@@ -246,148 +339,3 @@ function playClosingAnimation(reverseAnimation) {
     heroImage.classList.remove(reverseAnimation);
   }, 200);
 }
-
-// Onclick corner button functions
-tlBtn.onclick = function () {
-  if (activeCorner === "top-left") {
-    playClosingAnimation("reverse-animate-top-left");
-  } else {
-    trBtn.innerHTML = "Experience";
-    blBtn.innerHTML = "Projects";
-    brBtn.innerHTML = "Contact";
-
-    // Setting activeCorner
-    activeCorner = "top-left";
-    tlBtn.innerHTML = "&uarr;<br/>About";
-
-    handleWindowResize();
-    playAnimation("animate-top-left", "reverse-animate-top-left");
-
-    // Change background colors
-    trBtn.style.background = bgColor;
-    brBtn.style.background = bgColor;
-    blBtn.style.background = bgColor;
-    tlBtn.style.background = bgColorAlt;
-
-    // Change text colors
-    trBtn.style.color = textColor;
-    brBtn.style.color = textColor;
-    blBtn.style.color = textColor;
-    tlBtn.style.color = textColorAlt;
-
-    // Change positions of the corner content
-    trContent.style.transform = trHidden;
-    brContent.style.transform = brHidden;
-    blContent.style.transform = blHidden;
-    tlContent.style.transform = tlActive;
-  }
-};
-
-trBtn.onclick = function () {
-  if (activeCorner === "top-right") {
-    playClosingAnimation("reverse-animate-top-right");
-  } else {
-    tlBtn.innerHTML = "About";
-    blBtn.innerHTML = "Projects";
-    brBtn.innerHTML = "Contact";
-
-    // Setting activeCorner
-    activeCorner = "top-right";
-    trBtn.innerHTML = "&uarr;<br/>Experience";
-
-    handleWindowResize();
-    playAnimation("animate-top-right", "reverse-animate-top-right");
-
-    // Change background colors
-    trBtn.style.background = bgColorAlt;
-    brBtn.style.background = bgColor;
-    blBtn.style.background = bgColor;
-    tlBtn.style.background = bgColor;
-
-    // Change text colors
-    trBtn.style.color = textColorAlt;
-    brBtn.style.color = textColor;
-    blBtn.style.color = textColor;
-    tlBtn.style.color = textColor;
-
-    // Change positions of the corner content
-    trContent.style.transform = trActive;
-    brContent.style.transform = brHidden;
-    blContent.style.transform = blHidden;
-    tlContent.style.transform = tlHidden;
-  }
-};
-
-blBtn.onclick = function () {
-  if (activeCorner === "bottom-left") {
-    playClosingAnimation("reverse-animate-bottom-left");
-  } else {
-    tlBtn.innerHTML = "About";
-    trBtn.innerHTML = "Experience";
-    brBtn.innerHTML = "Contact";
-
-    // Setting activeCorner
-    activeCorner = "bottom-left";
-    blBtn.innerHTML = "Projects<br/>&darr;";
-
-    handleWindowResize();
-    playAnimation("animate-bottom-left", "reverse-animate-bottom-left");
-
-    // Change background colors
-    trBtn.style.background = bgColor;
-    brBtn.style.background = bgColor;
-    blBtn.style.background = bgColorAlt;
-    tlBtn.style.background = bgColor;
-
-    // Change text colors
-    trBtn.style.color = textColor;
-    brBtn.style.color = textColor;
-    blBtn.style.color = textColorAlt;
-    tlBtn.style.color = textColor;
-
-    // Change positions of the corner content
-    trContent.style.transform = trHidden;
-    brContent.style.transform = brHidden;
-    blContent.style.transform = blActive;
-    tlContent.style.transform = tlHidden;
-  }
-};
-
-
-
-
-
-brBtn.onclick = function () {
-  if (activeCorner === "bottom-right") {
-    playClosingAnimation("reverse-animate-bottom-right");
-  } else {
-    tlBtn.innerHTML = "About";
-    trBtn.innerHTML = "Experience";
-    blBtn.innerHTML = "Projects";
-
-    // Setting activeCorner
-    activeCorner = "bottom-right";
-    brBtn.innerHTML = "Contact<br/>&darr;";
-
-    handleWindowResize();
-    playAnimation("animate-bottom-right", "reverse-animate-bottom-right");
-
-    // Change background colors
-    trBtn.style.background = bgColor;
-    brBtn.style.background = bgColorAlt;
-    blBtn.style.background = bgColor;
-    tlBtn.style.background = bgColor;
-
-    // Change text colors
-    trBtn.style.color = textColor;
-    brBtn.style.color = textColorAlt;
-    blBtn.style.color = textColor;
-    tlBtn.style.color = textColor;
-
-    // Change positions of the corner content
-    trContent.style.transform = trHidden;
-    brContent.style.transform = brActive;
-    blContent.style.transform = blHidden;
-    tlContent.style.transform = tlHidden;
-  }
-};
